@@ -48,6 +48,7 @@ public class PatientService {
 	    existing.setNom(patient.getNom());
 	    existing.setTelephone(patient.getTelephone());
 	    existing.setAdresse(patient.getAdresse());
+	    existing.setSexe(patient.getSexe());
 	    return this.patientDAO.save(existing);
 	}
 	

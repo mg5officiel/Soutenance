@@ -62,6 +62,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String userEmail;
         try {
+            // Un refresh token ne doit jamais être accepté comme Bearer token.
+            if (!jwtService.isAccessToken(jwt)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Access token requis\"}");
+                return;
+            }
             userEmail = jwtService.extractUsername(jwt);
         } catch (JwtException e) {
             // Token expiré ou invalide → 401 immédiat au lieu de laisser passer

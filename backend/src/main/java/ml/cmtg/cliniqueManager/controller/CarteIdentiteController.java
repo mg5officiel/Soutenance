@@ -18,6 +18,8 @@ import java.io.IOException;
 @RequestMapping("/api/cartes-identite")
 public class CarteIdentiteController {
 
+    private static final long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
+
     private final GeminiCarteIdentiteService geminiCarteIdentiteService;
 
     public CarteIdentiteController(GeminiCarteIdentiteService geminiCarteIdentiteService) {
@@ -28,6 +30,13 @@ public class CarteIdentiteController {
     public ResponseEntity<?> extraire(@RequestParam("fichier") MultipartFile fichier) {
         if (fichier.isEmpty()) {
             return ResponseEntity.badRequest().body("Aucun fichier fourni.");
+        }
+        if (fichier.getSize() > MAX_IMAGE_SIZE) {
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                    .body("L'image ne doit pas dépasser 10 Mo.");
+        }
+        if (fichier.getContentType() == null || !fichier.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("Le fichier doit être une image.");
         }
         try {
             CarteIdentiteDTO donnees = geminiCarteIdentiteService.extraireDonnees(fichier);

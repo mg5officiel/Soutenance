@@ -1,6 +1,7 @@
 package ml.cmtg.cliniqueManager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class DossierMedical {
     @Column(length = 250)
     private String traitementEnCours;
 
+    @NotNull(message = "Le patient est obligatoire")
     @OneToOne
     @JoinColumn(nullable = false, unique = true)
     private Patient patient;

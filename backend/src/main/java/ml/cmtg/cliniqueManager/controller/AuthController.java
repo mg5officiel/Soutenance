@@ -2,6 +2,7 @@ package ml.cmtg.cliniqueManager.controller;
 
 import lombok.RequiredArgsConstructor;
 import ml.cmtg.cliniqueManager.dao.UserDAO;
+import ml.cmtg.cliniqueManager.dao.PersonnelDAO;
 import ml.cmtg.cliniqueManager.dto.AuthResponse;
 import ml.cmtg.cliniqueManager.dto.LoginRequest;
 import ml.cmtg.cliniqueManager.dto.RegisterRequest;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserDAO userDAO;
+    private final PersonnelDAO personnelDAO;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -40,11 +42,22 @@ public class AuthController {
                     .body("Username '" + r.username() + "' déjà utilisé.");
         }
 
-        var user = User.builder()
+        var userBuilder = User.builder()
                 .username(r.username())
                 .password(passwordEncoder.encode(r.password()))
-                .role(r.role())
-                .build();
+                .role(r.role());
+
+        if (r.personnelId() != null) {
+            var personnel = personnelDAO.findById(r.personnelId())
+                    .orElseThrow(() -> new IllegalArgumentException("Personnel introuvable."));
+            if (userDAO.findAll().stream().anyMatch(u -> u.getPersonnel() != null && u.getPersonnel().getId().equals(personnel.getId()))) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Ce personnel est déjà associé à un utilisateur.");
+            }
+            userBuilder.personnel(personnel);
+        }
+
+        var user = userBuilder.build();
 
         userDAO.save(user);
 

@@ -1,6 +1,9 @@
 package ml.cmtg.cliniqueManager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -15,18 +18,27 @@ public class Patient {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @NotBlank(message = "Le prénom est obligatoire")
+    @Size(max = 50, message = "Le prénom ne doit pas dépasser 50 caractères")
+    @Column(nullable = false, length = 50)
     private String prenom;
 
-    @Column(nullable = false, length = 20)
+    @NotBlank(message = "Le nom est obligatoire")
+    @Size(max = 50, message = "Le nom ne doit pas dépasser 50 caractères")
+    @Column(nullable = false, length = 50)
     private String nom;
 
-    @Column(nullable = false, length = 8)
+    @NotBlank(message = "Le téléphone est obligatoire")
+    @Size(min = 8, max = 20, message = "Le téléphone doit contenir entre 8 et 20 caractères")
+    @Column(nullable = false, length = 20)
     private String telephone;
 
-    @Column(nullable = false, length = 20)
+    @NotBlank(message = "L'adresse est obligatoire")
+    @Size(max = 150, message = "L'adresse ne doit pas dépasser 150 caractères")
+    @Column(nullable = false, length = 150)
     private String adresse;
 
+    @NotNull(message = "Le sexe est obligatoire")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 5)
     private Sexe sexe;

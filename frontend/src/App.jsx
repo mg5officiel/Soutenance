@@ -9,45 +9,34 @@ import Utilisateur from "./pages/Utilisateur";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
-	return (
-	<BrowserRouter>
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
 
-		<Routes>
-			<Route path="/" element={<Navigate to="/login" replace />}/>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
 
-			<Route path="/login" element={<Login />} />
+        <Route element={<ProtectedRoute roles={["ROLE_ADMIN", "ROLE_SECRETAIRE"]} />}>
+          <Route path="/patients" element={<Patient />} />
+        </Route>
 
-			<Route element={<ProtectedRoute />}>
-        		<Route path="/dashboard" element={<Dashboard />} />
-        	</Route>
+        <Route element={<ProtectedRoute roles={["ROLE_ADMIN"]} />}>
+          <Route path="/personnel" element={<Personnel />} />
+          <Route path="/utilisateur" element={<Utilisateur />} />
+        </Route>
 
-			<Route element={<ProtectedRoute roles={["ROLE_ADMIN"]} />}>
-				<Route path="/patients" element={<Patient />} />
-				<Route path="/personnel" element={<Personnel />} />
-				<Route path="/utilisateur" element={<Utilisateur />} />
-				<Route path="/consultations" element={<Consultation />} />
-				<Route path="/dossiers" element={<DossierMedical />} />
-			</Route>
+        <Route element={<ProtectedRoute roles={["ROLE_ADMIN", "ROLE_MEDECIN", "ROLE_INFIRMIER"]} />}>
+          <Route path="/consultations" element={<Consultation />} />
+          <Route path="/dossiers" element={<DossierMedical />} />
+        </Route>
 
-			<Route element={<ProtectedRoute roles={["ROLE_SECRETAIRE"]} />}>
-				<Route path="/patients" element={<Patient />} />
-			</Route>
-
-			<Route element={<ProtectedRoute roles={["ROLE_MEDECIN"]} />}>
-				<Route path="/consultations" element={<Consultation />} />
-				<Route path="/dossiers" element={<DossierMedical />} />
-				<Route path="/personnel" element={<Personnel />} />
-			</Route>
-
-			<Route element={<ProtectedRoute roles={["ROLE_INFIRMIER"]} />}>
-				<Route path="/consultations" element={<Consultation />} />
-				<Route path="/dossiers" element={<DossierMedical />} />
-			</Route>
-
-		</Routes>
-
-	</BrowserRouter>
-	);
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

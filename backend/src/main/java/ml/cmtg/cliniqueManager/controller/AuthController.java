@@ -48,9 +48,16 @@ public class AuthController {
                 .password(passwordEncoder.encode(r.password()))
                 .role(r.role());
 
+        if (r.role() != Role.ADMIN && r.personnelId() == null) {
+            return ResponseEntity.badRequest().body("Un personnel doit être associé à ce rôle.");
+        }
+
         if (r.personnelId() != null) {
             var personnel = personnelDAO.findById(r.personnelId())
                     .orElseThrow(() -> new IllegalArgumentException("Personnel introuvable."));
+            if (r.role() != Role.ADMIN && !personnel.getType().name().equals(r.role().name())) {
+                return ResponseEntity.badRequest().body("Le type du personnel ne correspond pas au rôle sélectionné.");
+            }
             if (userDAO.findAll().stream().anyMatch(u -> u.getPersonnel() != null && u.getPersonnel().getId().equals(personnel.getId()))) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Ce personnel est déjà associé à un utilisateur.");

@@ -41,7 +41,9 @@ public class JwtService {
     }
 
     public String generateRefreshToken(UserDetails user) {
-        return buildToken(new HashMap<>(), user, refreshExpiration);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        return buildToken(claims, user, refreshExpiration);
     }
 	
 	public String buildToken(Map<String, Object> extraClaims, UserDetails user, long expiration) {

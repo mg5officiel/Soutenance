@@ -25,7 +25,8 @@ function Utilisateurs() {
     const [fieldErrors, setFieldErrors] = useState({
         username: "",
         password: "",
-        role: ""
+        role: "",
+        personnelId: ""
     });
 
     const handleOpenModal = () => {

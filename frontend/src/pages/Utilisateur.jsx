@@ -30,8 +30,8 @@ function Utilisateurs() {
     });
 
     const handleOpenModal = () => {
-        setFormData({ username: "", password: "", role: "" });
-        setFieldErrors({ username: "", password: "", role: "" });
+        setFormData({ username: "", password: "", role: "", personnelId: "" });
+        setFieldErrors({ username: "", password: "", role: "", personnelId: "" });
         setFormError("");
         setIsModalOpen(true);
     };

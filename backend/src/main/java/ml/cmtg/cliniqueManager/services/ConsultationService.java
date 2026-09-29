@@ -76,4 +76,20 @@ public class ConsultationService {
 	public void deleteById(Long id) {
 		this.consultationDAO.deleteById(id);
 	}
+    private Patient resolvePatient(Patient patient) {
+        if (patient == null || patient.getId() == null) {
+            throw new IllegalArgumentException("Patient obligatoire.");
+        }
+        return patientDAO.findById(patient.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Patient introuvable."));
+    }
+
+    private Personnel resolvePersonnel(Personnel personnel) {
+        if (personnel == null || personnel.getId() == null) {
+            throw new IllegalArgumentException("Personnel obligatoire.");
+        }
+        return personnelDAO.findById(personnel.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Personnel introuvable."));
+    }
+
 }

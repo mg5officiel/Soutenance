@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import ml.cmtg.cliniqueManager.dao.ConsultationDAO;
 import ml.cmtg.cliniqueManager.dao.PersonnelDAO;
 import ml.cmtg.cliniqueManager.dao.PatientDAO;
+import ml.cmtg.cliniqueManager.dao.TypeConsultationDAO;
 import ml.cmtg.cliniqueManager.entity.Consultation;
 import ml.cmtg.cliniqueManager.entity.Personnel;
 import ml.cmtg.cliniqueManager.entity.Patient;
@@ -22,9 +23,15 @@ public class ConsultationService {
     private PatientDAO patientDAO;
     @Autowired
     private PersonnelDAO personnelDAO;
+    @Autowired
+    private TypeConsultationDAO typeConsultationDAO;
 	
 	//Enregistrement d'une connsultation
     public Consultation save(Consultation consultation) {
+        consultation.setPatient(resolvePatient(consultation.getPatient()));
+        consultation.setPersonnel(resolvePersonnel(consultation.getPersonnel()));
+        consultation.setType(typeConsultationDAO.findById(consultation.getType().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Type de consultation introuvable.")));
         return this.consultationDAO.save(consultation);
     }
 	
@@ -58,9 +65,10 @@ public class ConsultationService {
                 .orElseThrow(() -> new RuntimeException("Consultation non trouvée avec l'id : " + id));
         existing.setDate(consultation.getDate());
         existing.setMotif(consultation.getMotif());
-        existing.setPatient(consultation.getPatient());
-        existing.setPersonnel(consultation.getPersonnel());
-        existing.setType(consultation.getType());
+        existing.setPatient(resolvePatient(consultation.getPatient()));
+        existing.setPersonnel(resolvePersonnel(consultation.getPersonnel()));
+        existing.setType(typeConsultationDAO.findById(consultation.getType().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Type de consultation introuvable.")));
         return this.consultationDAO.save(existing);
     }
 	

@@ -39,7 +39,7 @@ function Utilisateurs() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setFormError("");
-        setFieldErrors({ username: "", password: "", role: "" });
+        setFieldErrors({ username: "", password: "", role: "", personnelId: "" });
     };
  
     const handleChange = (e) => {

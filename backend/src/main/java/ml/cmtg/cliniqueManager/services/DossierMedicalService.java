@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
-import ml.cmtg.cliniqueManager.dao.ConsultationDAO;
 import ml.cmtg.cliniqueManager.dao.DossierMedicalDAO;
 import ml.cmtg.cliniqueManager.dao.PatientDAO;
 import ml.cmtg.cliniqueManager.entity.DossierMedical;
@@ -19,11 +18,15 @@ public class DossierMedicalService {
     private DossierMedicalDAO dossierMedicalDAO;
     @Autowired
     private PatientDAO patientDAO;
-    @Autowired
-    private ConsultationDAO consultationDAO;
 
     // Créer un dossier médical
     public DossierMedical save(DossierMedical dossier) {
+        Patient patient = patientDAO.findById(dossier.getPatient().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Patient introuvable."));
+        if (dossierMedicalDAO.findByPatient(patient).isPresent()) {
+            throw new IllegalArgumentException("Ce patient possède déjà un dossier médical.");
+        }
+        dossier.setPatient(patient);
         return this.dossierMedicalDAO.save(dossier);
     }
 

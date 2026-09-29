@@ -28,6 +28,12 @@ public class DossierMedicalController {
         return this.dossierMedicalService.findAll();
     }
 
+    // Créer un dossier médical
+    @PostMapping("/new")
+    public DossierMedical save(@RequestBody DossierMedical dossier) {
+        return this.dossierMedicalService.save(dossier);
+    }
+
     // Récupérer un dossier par id
     @GetMapping("/{id}")
     public Optional<DossierMedical> findById(@PathVariable Long id) {

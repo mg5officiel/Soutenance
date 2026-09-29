@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ml.cmtg.cliniqueManager.dao.UserDAO;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -75,16 +76,44 @@ public class SecurityConfig {
                         // ── Profil : tout utilisateur authentifié ─────────────────────
                         .requestMatchers("/user/me").authenticated()
 
-                        // ── Patients : ADMIN + SECRETAIRE ─────────────────────────────
-                        .requestMatchers("/patients/**")
+                        // ── Lecture des patients : nécessaire aux écrans cliniques ────
+                        .requestMatchers(HttpMethod.GET, "/patients/**")
+                        .hasAnyRole("ADMIN", "SECRETAIRE", "MEDECIN", "INFIRMIER")
+
+                        // ── Modification des patients : ADMIN + SECRETAIRE ─────────────
+                        .requestMatchers(HttpMethod.POST, "/patients/**")
+                        .hasAnyRole("ADMIN", "SECRETAIRE")
+                        .requestMatchers(HttpMethod.PUT, "/patients/**")
+                        .hasAnyRole("ADMIN", "SECRETAIRE")
+                        .requestMatchers(HttpMethod.DELETE, "/patients/**")
                         .hasAnyRole("ADMIN", "SECRETAIRE")
 
-                        // ── Consultations & Dossiers : ADMIN + MEDECIN + INFIRMIER ─────
+                        // ── Consultations & Dossiers ────────────────────────────────────
                         .requestMatchers("/consultations/**", "/dossier-medical/**")
                         .hasAnyRole("ADMIN", "MEDECIN", "INFIRMIER")
 
-                        // ── Personnel & Utilisateurs : ADMIN uniquement ────────────────
-                        .requestMatchers("/personnels/**", "/user/users")
+                        // ── Lecture du personnel : nécessaire aux consultations ─────────
+                        .requestMatchers(HttpMethod.GET, "/personnels/**")
+                        .hasAnyRole("ADMIN", "MEDECIN", "INFIRMIER")
+                        .requestMatchers(HttpMethod.POST, "/personnels/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/personnels/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/personnels/**")
+                        .hasRole("ADMIN")
+
+                        // ── Types de consultation : lecture pour le personnel clinique ─
+                        .requestMatchers(HttpMethod.GET, "/type-consultation/**")
+                        .hasAnyRole("ADMIN", "MEDECIN", "INFIRMIER")
+                        .requestMatchers(HttpMethod.POST, "/type-consultation/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/type-consultation/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/type-consultation/**")
+                        .hasRole("ADMIN")
+
+                        // ── Utilisateurs : ADMIN uniquement ─────────────────────────────
+                        .requestMatchers("/user/users")
                         .hasRole("ADMIN")
 
                         // ── Tout le reste : authentifié ───────────────────────────────

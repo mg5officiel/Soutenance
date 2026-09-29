@@ -8,8 +8,8 @@ function Sidebar() {
 	const navigate = useNavigate();
 
 	const role = getRoleFromToken(); // "ROLE_ADMIN", "ROLE_MEDECIN" …
-  	const is  = (r) => role === `ROLE_${r}`;
-  	const any = (...roles) => roles.some((r) => is(r));
+  	const is = (r) => role === `ROLE_${r}`;
+  const any = (...roles) => roles.some((r) => is(r));
 
 	const handleLogout = () => {
 		logout();
@@ -62,7 +62,7 @@ function Sidebar() {
 						</NavLink>
 					)}
 
-					{is("ADMIN", "MEDECIN") && (
+					{is("ADMIN") && (
 						<NavLink to="/personnel" className={linkClass}>
 							<UsersRound size={20} strokeWidth={2} />
 							<span>Personnel</span>

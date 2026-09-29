@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ml.cmtg.cliniqueManager.entity.Consultation;
@@ -23,7 +24,7 @@ public class ConsultationController {
 	
 	//Enregistrement d'une consultation
 	@PostMapping("/new")
-	public Consultation save(@RequestBody Consultation consultation) {
+	public Consultation save(@Valid @RequestBody Consultation consultation) {
 		return this.consultationService.save(consultation);
 	}
 	
@@ -53,7 +54,7 @@ public class ConsultationController {
     
  // Modifier une consultation
     @PutMapping("/update/{id}")
-    public Consultation update(@PathVariable Long id, @RequestBody Consultation consultation) {
+    public Consultation update(@PathVariable Long id, @Valid @RequestBody Consultation consultation) {
         return this.consultationService.update(id, consultation);
     }
 	

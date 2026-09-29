@@ -6,6 +6,7 @@ import ml.cmtg.cliniqueManager.dao.PersonnelDAO;
 import ml.cmtg.cliniqueManager.dto.AuthResponse;
 import ml.cmtg.cliniqueManager.dto.LoginRequest;
 import ml.cmtg.cliniqueManager.dto.RegisterRequest;
+import ml.cmtg.cliniqueManager.dto.RefreshRequest;
 import ml.cmtg.cliniqueManager.entity.Role;
 import ml.cmtg.cliniqueManager.services.JwtService;
 import jakarta.validation.Valid;
@@ -78,6 +79,25 @@ public class AuthController {
         String refreshToken = jwtService.generateRefreshToken(user);
 
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshRequest request) {
+        try {
+            if (!jwtService.isRefreshToken(request.refreshToken())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalide ou expiré.");
+            }
+
+            String username = jwtService.extractUsername(request.refreshToken());
+            User user = userDAO.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable."));
+
+            String accessToken = jwtService.generateToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+            return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalide ou expiré.");
+        }
     }
 
 }

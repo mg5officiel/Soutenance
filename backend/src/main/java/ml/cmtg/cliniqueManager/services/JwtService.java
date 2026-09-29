@@ -94,4 +94,13 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public boolean isRefreshToken(String token) {
+        try {
+            return "refresh".equals(extractClaim(token, claims -> claims.get("type", String.class)))
+                    && !isExpired(token);
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
 }

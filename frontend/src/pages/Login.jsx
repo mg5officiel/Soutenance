@@ -12,12 +12,14 @@ function Login() {
     const [usernameError, setUsernameError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [authError, setAuthError] = useState("");
 
     const handleLogin = async (e) => {
         e.preventDefault();
 
         setUsernameError("");
         setPasswordError("");
+        setAuthError("");
 
         let hasError = false;
 
@@ -46,15 +48,18 @@ function Login() {
                 console.log("Connexion réussie !");
                 navigate("/dashboard");
         } catch (error) {
-
             console.error("Erreur de connexion :", error);
-
+            setAuthError(
+                error.response?.status === 401
+                    ? "Nom d'utilisateur ou mot de passe incorrect."
+                    : "Impossible de se connecter au serveur."
+            );
         } finally {
             setLoading(false);
         }
     };
     return(
-        <div className="bg-gray-100 min-h-screen gb-gray-100 flex items-center justify-center p-4">
+        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
             <div className="w-full max-w-xs bg-white/70 p-6 border rounded-xl shadow-lg">
                 <div className="flex items-center justify-center mb-4">
                     <div className="w-12 h-12 rounded-3xl text-white bg-indigo-600 flex items-center justify-center">
@@ -64,9 +69,15 @@ function Login() {
                 <h1 className="text-2xl font-bold text-center text-indigo-600">
                     Gestion Clinique
                 </h1>
-                <p className="text-center text-xs font-semibold text-gray-700 mt">
+                <p className="text-center text-xs font-semibold text-gray-700 mt-1">
                     Connectez-vous pour continuer
                 </p>
+
+                {authError && (
+                    <div className="mt-4 px-3 py-2 rounded-lg bg-red-50 text-red-700 text-xs text-center">
+                        {authError}
+                    </div>
+                )}
 
                 <form onSubmit={handleLogin} className="mt-6">
 

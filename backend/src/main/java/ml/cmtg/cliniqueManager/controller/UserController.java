@@ -7,6 +7,7 @@ import ml.cmtg.cliniqueManager.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +41,13 @@ public class UserController {
     // DELETE — réservé aux ADMIN
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (currentUser != null && currentUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        if (!userDAO.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         userDAO.deleteById(id);
         return ResponseEntity.noContent().build();
     }

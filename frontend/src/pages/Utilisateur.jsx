@@ -8,6 +8,7 @@ import api from "../services/api";
 function Utilisateurs() {
     // DONNÉES
     const [users, setUsers] = useState([]);
+    const [personnels, setPersonnels] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -18,7 +19,8 @@ function Utilisateurs() {
     const [formData, setFormData] = useState({
         username: "",
         password: "",
-        role: ""
+        role: "",
+        personnelId: ""
     });
     const [fieldErrors, setFieldErrors] = useState({
         username: "",
@@ -49,7 +51,17 @@ function Utilisateurs() {
     // CHARGEMENT DES UTILISATEURS
     useEffect(() => {
         loadUsers();
+        loadPersonnels();
     }, []);
+
+    const loadPersonnels = async () => {
+        try {
+            const response = await api.get("/personnels");
+            setPersonnels(response.data);
+        } catch (error) {
+            console.error("Erreur lors du chargement des personnels :", error);
+        }
+    };
 
     const loadUsers = async () => {
         setLoading(true);
@@ -139,10 +151,13 @@ function Utilisateurs() {
             newErrors.username = "Le nom d'utilisateur est obligatoire.";
         }
         if (!formData.password || formData.password.length < 8) {
-            newErrors.password = "Le mot de passe doit contenir au moins 6 caractères.";
+            newErrors.password = "Le mot de passe doit contenir au moins 8 caractères.";
         }
         if (!formData.role) {
             newErrors.role = "Veuillez sélectionner un rôle.";
+        }
+        if (formData.role !== "ADMIN" && !formData.personnelId) {
+            newErrors.personnelId = "Sélectionnez le personnel associé à ce compte.";
         }
         setFieldErrors(newErrors);
         if (Object.keys(newErrors).length > 0) {
@@ -156,7 +171,8 @@ function Utilisateurs() {
             await api.post("/auth/register", {
                 username: formData.username.trim(),
                 password: formData.password,
-                role: formData.role
+                role: formData.role,
+                personnelId: formData.personnelId ? Number(formData.personnelId) : null
             });
 
             setIsModalOpen(false);
@@ -420,6 +436,33 @@ function Utilisateurs() {
                         </div>
 
                     </div>
+
+                        <div>
+                            <label htmlFor="personnelId" className="block text-sm font-medium text-gray-700 mb-1.5">
+                                Personnel associé
+                            </label>
+                            <select
+                                id="personnelId"
+                                name="personnelId"
+                                value={formData.personnelId}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-2.5 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 ${
+                                    fieldErrors.personnelId
+                                        ? "border border-red-500 focus:ring-red-500"
+                                        : "border border-gray-300 focus:ring-indigo-500"
+                                }`}
+                            >
+                                <option value="">Sélectionner un personnel</option>
+                                {personnels.map((personnel) => (
+                                    <option key={personnel.id} value={personnel.id}>
+                                        {personnel.prenom} {personnel.nom} — {personnel.type || "Personnel"}
+                                    </option>
+                                ))}
+                            </select>
+                            {fieldErrors.personnelId && (
+                                <p className="text-xs text-red-500 mt-1">{fieldErrors.personnelId}</p>
+                            )}
+                        </div>
 
                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
                         <button type="button" onClick={handleCloseModal} className="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition">

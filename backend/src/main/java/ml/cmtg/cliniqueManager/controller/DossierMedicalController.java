@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ml.cmtg.cliniqueManager.entity.DossierMedical;
@@ -30,7 +31,7 @@ public class DossierMedicalController {
 
     // Créer un dossier médical
     @PostMapping("/new")
-    public DossierMedical save(@RequestBody DossierMedical dossier) {
+    public DossierMedical save(@Valid @RequestBody DossierMedical dossier) {
         return this.dossierMedicalService.save(dossier);
     }
 
@@ -48,7 +49,7 @@ public class DossierMedicalController {
 
     // Modifier un dossier médical
     @PutMapping("/update/{id}")
-    public DossierMedical update(@PathVariable Long id, @RequestBody DossierMedical dossier) {
+    public DossierMedical update(@PathVariable Long id, @Valid @RequestBody DossierMedical dossier) {
         return this.dossierMedicalService.update(id, dossier);
     }
 
